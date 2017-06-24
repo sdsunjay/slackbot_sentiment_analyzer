@@ -1,1 +1,1 @@
-worker: python python-rtmbot-master/rtmbot.py
+worker: python rtmbot.py

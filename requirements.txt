@@ -1,5 +1,6 @@
 requests
 python-daemon
+algorithmia
 pyyaml
 websocket-client
 slackclient

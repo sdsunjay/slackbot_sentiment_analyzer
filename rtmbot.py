@@ -24,12 +24,12 @@ def parse_args():
 if __name__ == '__main__':
     
 
-    on_heroku = True
+    on_heroku = False
     if 'HEROKU_ENV_VAR' in os.environ:
         on_heroku = True
     if on_heroku:
         eprint('on heroku')
-        config = {'SLACK_ID': os.getenv('SLACK_ID'), 'ALGORITHMIA_KEY': os.getenv('ALGORITHMIA_KEY'), 'SLACK_TOKEN': os.getenv('SLACK_TOKEN'), 'DEBUG': os.getenv('DEBUG'), 'TALK': os.getenv('TALK')}
+	config = {'SLACK_ID': os.environ.get('SLACK_ID', None), 'ALGORITHMIA_KEY': os.environ.get('ALGORITHMIA_KEY', None), 'SLACK_TOKEN': os.environ.get('SLACK_TOKEN', None), 'DEBUG': os.environ.get('DEBUG', None), 'TALK': os.environ.get('TALK', None)}
         eprint('YAML: ' + str(config))
         eprint(os.environ)        
         bot = RtmBot(config)
@@ -37,6 +37,7 @@ if __name__ == '__main__':
     else:
         if os.path.exists('rtmbot.conf') == False:
 	    print('Client secrets file (rtmbot.conf) not found in the app path.')
+        print('YAML: ' + str(config))
 	    sys.exit(0)
 	args = parse_args()
 	with open("rtmbot.conf", 'r') as stream:

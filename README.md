@@ -17,6 +17,7 @@ Update python-rtmbot-master/rtmbot.conf with your API keys from Slack and Algori
 
 ```
 DEBUG: True
+TALK: True
 
 SLACK_TOKEN: "YOUR_SLACK_TOKEN"
 ALGORITHMIA_KEY: "YOUR_ALGORITHMIA_KEY"
@@ -76,7 +77,7 @@ This will display the current averages:
 
 ```
 marvin BOT [7:45 PM]
-Positive: 20.0%
-Neutral: 60.0%
-Negative: 20.0%
+Positive: 20.0% (2)
+Neutral: 60.0% (6)
+Negative: 20.0% (2)
 ```

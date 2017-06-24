@@ -31,6 +31,9 @@ class RtmBot(object):
         # set slack token
         self.token = config.get('SLACK_TOKEN')
 
+        # set algorithmia token
+        self.algorithmia = config.get('ALGORITHMIA_KEY')
+
         # set working directory for loading plugins or other files
         working_directory = os.path.dirname(sys.argv[0])
         self.directory = self.config.get('BASE_PATH', working_directory)
@@ -122,6 +125,7 @@ class RtmBot(object):
                 logging.info("config found for: " + name)
             plugin_config = self.config.get(name, {})
             plugin_config['DEBUG'] = self.debug
+            plugin_config['ALGORITHMIA'] = self.algorithmia
             self.bot_plugins.append(Plugin(name, plugin_config))
 
 
@@ -142,6 +146,7 @@ class Plugin(object):
         self.module = __import__(name)
         self.module.config = plugin_config
         self.debug = self.module.config.get('DEBUG', False)
+        self.algorithmia = self.module.config.get('ALGORITHMIA', None)
         self.register_jobs()
         self.outputs = []
         if 'setup' in dir(self.module):
@@ -161,11 +166,11 @@ class Plugin(object):
         if function_name in dir(self.module):
             if self.debug is True:
                 # this makes the plugin fail with stack trace in debug mode
-                eval("self.module." + function_name)(data)
+                eval("self.module." + function_name)(self, data)
             else:
                 # otherwise we log the exception and carry on
                 try:
-                    eval("self.module." + function_name)(data)
+                    eval("self.module." + function_name)(self, data)
                 except Exception:
                     logging.exception(
                         "problem in module {} {}".format(function_name, data))

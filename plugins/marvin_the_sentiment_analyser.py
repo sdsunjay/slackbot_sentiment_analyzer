@@ -3,12 +3,6 @@ import yaml
 import traceback
 
 
-CONFIG = yaml.load(file("rtmbot.conf", "r"))
-
-ALGORITHMIA_CLIENT = Algorithmia.client(CONFIG["ALGORITHMIA_KEY"])
-#ALGORITHM = ALGORITHMIA_CLIENT.algo("nlp/SentimentAnalysis/0.1.2")
-ALGORITHM = ALGORITHMIA_CLIENT.algo('nlp/SocialSentimentAnalysis/0.1.3')
-
 outputs = []
 
 sentiment_results = {
@@ -44,7 +38,9 @@ def display_current_mood(channel):
     return
 
 
-def process_message(data):
+def process_message(self, data):
+    ALGORITHMIA_CLIENT = Algorithmia.client(self.algorithmia)
+    ALGORITHM = ALGORITHMIA_CLIENT.algo('nlp/SocialSentimentAnalysis/0.1.3')
     data["channel"] = "C5Z0VQFTN"
     text = data.get("text", None)
 
@@ -101,11 +97,11 @@ def process_message(data):
 
         reply = 'Comment "{}" was {}, compound result {}'.format(
             text, verdict, compound_result)
-        if CONFIG["TALK"]:
-            outputs.append([data.get("channel", None), str(reply)])
-        else:
-            # print to the console what just happened
-            print(reply)
+#      if CONFIG["TALK"]:
+        outputs.append([data.get("channel", None), str(reply)])
+        # else:
+        # print to the console what just happened
+# print(reply)
 
     except Exception as exception:
         # a few things can go wrong but the important thing is keep going

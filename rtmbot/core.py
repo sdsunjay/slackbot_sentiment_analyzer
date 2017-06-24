@@ -12,6 +12,7 @@ sys.dont_write_bytecode = True
 
 
 class RtmBot(object):
+
     def __init__(self, config):
         '''
             Params:
@@ -149,7 +150,8 @@ class Plugin(object):
     def register_jobs(self):
         if 'crontable' in dir(self.module):
             for interval, function in self.module.crontable:
-                self.jobs.append(Job(interval, eval("self.module." + function), self.debug))
+                self.jobs.append(
+                    Job(interval, eval("self.module." + function), self.debug))
             logging.info(self.module.crontable)
             self.module.crontable = []
         else:
@@ -165,7 +167,8 @@ class Plugin(object):
                 try:
                     eval("self.module." + function_name)(data)
                 except Exception:
-                    logging.exception("problem in module {} {}".format(function_name, data))
+                    logging.exception(
+                        "problem in module {} {}".format(function_name, data))
         if "catch_all" in dir(self.module):
             if self.debug is True:
                 # this makes the plugin fail with stack trace in debug mode
@@ -174,7 +177,8 @@ class Plugin(object):
                 try:
                     self.module.catch_all(data)
                 except Exception:
-                    logging.exception("problem in catch all: {} {}".format(self.module, data))
+                    logging.exception(
+                        "problem in catch all: {} {}".format(self.module, data))
 
     def do_jobs(self):
         for job in self.jobs:
@@ -195,6 +199,7 @@ class Plugin(object):
 
 
 class Job(object):
+
     def __init__(self, interval, function, debug):
         self.function = function
         self.interval = interval
@@ -217,7 +222,8 @@ class Job(object):
                 try:
                     self.function()
                 except Exception:
-                    logging.exception("Problem in job check: {}".format(self.function))
+                    logging.exception(
+                        "Problem in job check: {}".format(self.function))
             self.lastrun = time.time()
 
 

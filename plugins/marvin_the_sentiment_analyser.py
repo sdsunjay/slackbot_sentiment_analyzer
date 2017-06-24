@@ -37,10 +37,12 @@ def display_current_mood(channel):
     for k, v in sentiment_averages.iteritems():
         if k == "total":
             continue
-        reply += "{}: {}% ({})\n ".format(k.capitalize(), v, str(int(round((sentiment_averages.get("total")*v)/100))))
+        reply += "{}: {}% ({})\n ".format(k.capitalize(), v,
+                                          str(int(round((sentiment_averages.get("total") * v) / 100))))
 
     outputs.append([channel, str(reply)])
     return
+
 
 def process_message(data):
     data["channel"] = "C5Z0VQFTN"
@@ -58,7 +60,7 @@ def process_message(data):
     # don't log the current mood reply!
     if text.startswith('Positive:'):
         return
-    
+
     if text.startswith('Easy there'):
         return
 
@@ -96,16 +98,17 @@ def process_message(data):
 
         if compound_result < -0.75:
             outputs.append([data["channel"], "Easy there, negative Nancy!"])
-        
-        reply = 'Comment "{}" was {}, compound result {}'.format(text, verdict, compound_result) 
+
+        reply = 'Comment "{}" was {}, compound result {}'.format(
+            text, verdict, compound_result)
         if CONFIG["TALK"]:
             outputs.append([data.get("channel", None), str(reply)])
         else:
             # print to the console what just happened
-            print reply
+            print(reply)
 
     except Exception as exception:
         # a few things can go wrong but the important thing is keep going
         # print the error and then move on
-        print "Something went wrong processing the text: {}".format(text)
-        print traceback.format_exc(exception)
+        print("Something went wrong processing the text: {}".format(text))
+        print(traceback.format_exc(exception))

@@ -47,12 +47,11 @@ def list_channels(slack_client):
 
 def run(slack_client, channel, algorithm):
 
-    channel = 'C03T49SPB'
-
+    print channel
+    # https://slack.com/api/channels.history
     # Grab yesterday's history
     to_timestamp = date.today()
     from_timestamp = date.today() - timedelta(days=1)
-
     # fetch the history and convert to JSON
     history = slack_client.api_call(
         "channels.history",
@@ -60,7 +59,7 @@ def run(slack_client, channel, algorithm):
         inclusive=1,
         latest=to_timestamp.strftime('%s'),
         oldest=from_timestamp.strftime('%s'))
-
+    print history
     if isinstance(history, dict):
         if history['ok'] is False:
             print("Failed to call Slack, error message: {}".format(
@@ -81,7 +80,7 @@ def run(slack_client, channel, algorithm):
     }
 
     for message in history['messages']:
-
+        print message
         text = message.get("text", False)
 
         # exclude empty or server generated messages
@@ -166,5 +165,5 @@ if __name__ == "__main__":
 
         print tabulate(display, headers=["Channel Name", "Slack ID"])
         exit()
-
+    print args.channel_name
     run(slack_client, args.channel_name, algorithm)

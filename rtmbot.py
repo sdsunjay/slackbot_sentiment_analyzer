@@ -1,15 +1,14 @@
 #!/usr/bin/env python
+import logging
 import os
 import sys
 from argparse import ArgumentParser
 
 import yaml
 from rtmbot import RtmBot
-from __future__ import print_function
 
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
-
+def eprint(str):
+    logging.debug(str)
 
 def parse_args():
     parser = ArgumentParser()
@@ -25,12 +24,12 @@ def parse_args():
 if __name__ == '__main__':
     
 
-    on_heroku = False
+    on_heroku = True
     if 'HEROKU_ENV_VAR' in os.environ:
         on_heroku = True
     if on_heroku:
         eprint('on heroku')
-	config = {'SLACK_ID': os.getenv('SLACK_ID'), 'ALGORITHMIA_KEY': os.getenv('ALGORITHMIA_KEY'), 'SLACK_TOKEN': os.getenv('SLACK_TOKEN'), 'DEBUG': os.getenv('DEBUG'), 'TALK': os.getenv('TALK')}
+        config = {'SLACK_ID': os.getenv('SLACK_ID'), 'ALGORITHMIA_KEY': os.getenv('ALGORITHMIA_KEY'), 'SLACK_TOKEN': os.getenv('SLACK_TOKEN'), 'DEBUG': os.getenv('DEBUG'), 'TALK': os.getenv('TALK')}
         eprint('YAML: ' + str(config))
         eprint(os.environ)        
         bot = RtmBot(config)
@@ -42,17 +41,16 @@ if __name__ == '__main__':
 	args = parse_args()
 	with open("rtmbot.conf", 'r') as stream:
 	    try:
-	        print stream
-		config = (yaml.load(stream))
-                print 'YAML: ' + str(config)
+                config = (yaml.load(stream))
+#print 'YAML: ' + str(config)
                 for x in config:
-                    print (x)
+#                   print (x)
 #for y in config[x]:
 #		        print (y,':',config[x][y])
 		    bot = RtmBot(config)
-                    try:
-                        bot.start()
-                    except KeyboardInterrupt:
-	                sys.exit(0)
+#    try:
+#                       bot.start()
+#                   except KeyboardInterrupt:
+#	                sys.exit(0)
 	    except yaml.YAMLError as exc:
 	        print(exc)

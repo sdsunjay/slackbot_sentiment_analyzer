@@ -18,6 +18,10 @@ sentiment_averages = {
     "total": 0,
 }
 
+def default_response(channel):
+    reply = "Thank you for your interest in this simple Slack Bot. Due to overwhelming interest, I only respond to messages that contain the password. Please visit https://github.com/sdsunjay/slackbot_sentiment_analyzer to learn more."
+    outputs.append([channel, str(reply)])
+    return
 
 def display_current_mood(channel):
     reply = ""
@@ -37,29 +41,9 @@ def display_current_mood(channel):
     outputs.append([channel, str(reply)])
     return
 
-
-def process_message(self, data):
+def analyze_message(channel, text):
     ALGORITHMIA_CLIENT = Algorithmia.client(self.algorithmia)
     ALGORITHM = ALGORITHMIA_CLIENT.algo('nlp/SocialSentimentAnalysis/0.1.3')
-    data["channel"] = "C5Z0VQFTN"
-    text = data.get("text", None)
-
-    if not text or data.get("subtype", "") == "channel_join":
-        return
-
-    # remove any odd encoding
-    text = text.encode('utf-8')
-
-    if "current mood?" in text:
-        return display_current_mood(data.get("channel", None))
-
-    # don't log the current mood reply!
-    if text.startswith('Positive:'):
-        return
-
-    if text.startswith('Easy there'):
-        return
-
     try:
         sentence = {
             "sentence": text
@@ -93,12 +77,12 @@ def process_message(self, data):
                 float(v) / float(sentiment_averages["total"]) * 100, 2)
 
         if compound_result < -0.75:
-            outputs.append([data["channel"], "Easy there, negative Nancy!"])
+            outputs.append([channel, "Easy there, negative Nancy!"])
 
         reply = 'Comment "{}" was {}, compound result {}'.format(
             text, verdict, compound_result)
 #      if CONFIG["TALK"]:
-        outputs.append([data.get("channel", None), str(reply)])
+        outputs.append([channel, str(reply)])
         # else:
         # print to the console what just happened
 # print(reply)
@@ -108,3 +92,34 @@ def process_message(self, data):
         # print the error and then move on
         print("Something went wrong processing the text: {}".format(text))
         print(traceback.format_exc(exception))
+
+def process_message(self, data):
+    data["channel"] = "C5Z0VQFTN"
+    text = data.get("text", None)
+
+    if not text or data.get("subtype", "") == "channel_join":
+        return
+    
+    # remove any odd encoding
+    text = text.encode('utf-8')
+
+    if "current mood?" in text:
+        return display_current_mood(data.get("channel", None))
+
+    # don't log the current mood reply!
+    if text.startswith('Positive:'):
+        return
+
+    if text.startswith('Easy there'):
+        return
+
+    # Translate user id to username
+    user = data.get('user')
+    username = utils.get_user_name(user, slack_client)
+    if username.lower().startswith("sunjay"):
+	analyze_message(data["channel"], text)
+    elif "yonsereonfundle" in text:
+	analyze_message(data["channel"], text)
+    else:
+	default_response(data["channel"])
+
